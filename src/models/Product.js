@@ -15,6 +15,11 @@ const productSchema = new mongoose.Schema({
     },
     image: {
         type: String,
+    },
+    categoryId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Category",
+        require: true
     }
 }, { timestamps: true, versionKey: false })
 // tao ra 1 model ten la Product

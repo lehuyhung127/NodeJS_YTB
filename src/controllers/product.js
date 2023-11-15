@@ -1,10 +1,11 @@
+import Category from "../models/Category.js";
 import Product from "../models/Product.js";
 import { productValid } from "../validation/product.js";
 
 export const getAll = async (req, res) => {
   try {
     // res.send('Lay danh sach san pham')
-    const products = await Product.find();
+    const products = await Product.find().populate("categoryId");
     if (products.length === 0) {
       return res.status(404).json({
         message: "Khong tim thay san pham",
@@ -24,7 +25,7 @@ export const getAll = async (req, res) => {
 export const getDetail = async (req, res) => {
   try {
     // res.send('Lay danh sach san pham')
-    const product = await Product.findById(req.params.id);
+    const product = await Product.findById(req.params.id).populate("categoryId");
     if (!product) {
       return res.status(404).json({
         message: "Khong tim thay san pham",
@@ -46,7 +47,7 @@ export const create = async (req, res) => {
     const {error} = productValid.validate(req.body)
     if(error) {
       return res.status(400).json({
-        message: error.details[0].message,
+        message: error.details[0].message || "Please re-check your data",
       })
     }
     const product = await Product.create(req.body)
@@ -55,6 +56,18 @@ export const create = async (req, res) => {
         message: "Tao san pham khong thanh cong",
       });
     }
+
+    const updateCategory = await Category.findByIdAndUpdate(product.categoryId, {
+      $addToSet: {
+      products: product._id
+    }})
+    if(!updateCategory){
+      return res.status(404).json({
+      message: "Cap nhat categori khong thanh cong",
+    });
+    }
+    
+
     return res.status(200).json({
       message: "Tao thanh cong san pham",
       datas: product,
@@ -81,6 +94,15 @@ export const update = async (req, res) => {
         message: "Cap nhat san pham khong thanh cong",
       });
     }
+    const updateCategory = await Category.findByIdAndUpdate(product.categoryId, {
+      $addToSet: {
+      products: product._id
+    }})
+    if(!updateCategory){
+      return res.status(404).json({
+      message: "Cap nhat categori khong thanh cong",
+    });
+    }
     return res.status(200).json({
       message: "Cap nhat thanh cong san pham",
       product
@@ -99,6 +121,15 @@ export const remove = async (req, res) => {
       return res.status(400).json({
         message: "Xoa khong thanh cong san pham",
       });
+    }
+    const updateCategory = await Category.findByIdAndRemove(product.categoryId, {
+      $addToSet: {
+      products: product._id
+    }})
+    if(!updateCategory){
+      return res.status(404).json({
+      message: "Cap nhat categori khong thanh cong",
+    });
     }
     return res.status(200).json({
       message: "Xoa san pham thanh cong",
