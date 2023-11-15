@@ -66,7 +66,7 @@ export const signIn = async (req, res) => {
       });
     }
 
-    const accessToken = jwt.sign({ _id: user._id }, SECRET_CODE);
+    const accessToken = jwt.sign({ _id: user._id }, SECRET_CODE, {expiresIn: "1d"} );
 
     user.password = undefined;
     return res.status(200).json({
