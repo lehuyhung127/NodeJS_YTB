@@ -1,10 +1,10 @@
 import express from "express";
-import { create, getAll, getDetail, remove, update } from '../controllers/product.js';
+import { create, getList, getDetail, remove, update } from '../controllers/product.js';
 import { checkPermission } from "../middlewares/checkPermission.js";
 
 
 const router = express.Router()
-router.get('/', getAll)
+router.get('/', getList)
 router.get('/:id', getDetail)
 router.post('/', checkPermission, create)
 router.put('/:id', checkPermission, update)
