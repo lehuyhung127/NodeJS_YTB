@@ -2,11 +2,20 @@ import Category from "../models/Category.js";
 import Product from "../models/Product.js";
 import { productValid } from "../validation/product.js";
 
-export const getAll = async (req, res) => {
+export const getList = async (req, res) => {
   try {
     // res.send('Lay danh sach san pham')
-    const products = await Product.find().populate("categoryId");
-    if (products.length === 0) {
+    // const products = await Product.find().populate("categoryId");
+    const {_page=1, _limit=10, _sort="createdAt", _oder="asc"} = req.query
+    const options = {
+      page: _page,
+      limit: _limit,
+      sort: {
+        [_sort]: _oder === 'asc' ? 1 : -1
+      },
+    }
+    const products = await Product.paginate({}, options)
+    if (!products.docs || products.docs.length === 0) {
       return res.status(404).json({
         message: "Khong tim thay san pham",
       });

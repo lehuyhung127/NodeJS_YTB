@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import mongoosePaginate from 'mongoose-paginate-v2'
 const productSchema = new mongoose.Schema({
     name: {
         type: String,
@@ -21,6 +22,7 @@ const productSchema = new mongoose.Schema({
         ref: "Category",
         require: true
     }
-}, { timestamps: true, versionKey: false })
+}, { timestamps: true, versionKey: false });
+productSchema.plugin(mongoosePaginate)
 // tao ra 1 model ten la Product
 export default mongoose.model('Product', productSchema);
